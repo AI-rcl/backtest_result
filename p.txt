@@ -1,3 +1,6 @@
+h1 = data[(data['last_price']<=data['bid_price'])&(data['diff0']>=-1)&(data['bid_volume']>2.5*data['ask_volume'])].index
+l1 = data[(data['last_price']>=data['ask_price'])&(data['diff1']<=-1)&(data['ask_volume']>2.5*data['bid_volume'])].index
+
 pos = 0
 
 long_benifit = 29
