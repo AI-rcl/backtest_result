@@ -1,0 +1,86 @@
+h1 = data[(data['last_price']<=data['bid_price'])&(data['bid_volume']>10*data['ask_volume'])].index
+l1 = data[(data['last_price']>=data['ask_price'])&(data['ask_volume']>10*data['bid_volume'])].index
+
+pos = 0
+
+long_benifit = 15
+long_loss = -18
+short_benifit = 15
+short_loss = -18
+max_drop = 9
+min_drop = 9
+
+
+long_diff = []
+short_diff = []
+total_diff = []
+direction = []
+changed = []
+cumsum = []
+pos_price = 0
+min_price = 0 
+max_price = 0
+drop = 0
+
+for row in tqdm(test_data.iterrows()):
+    sign = row[1]['sign']
+    roll_sum = sum(changed[-5:])
+    roll_sum_1 = sum(changed[-6:-1])
+    roll_diff = roll_sum - roll_sum_1
+    roll_total = roll_sum+roll_diff
+    
+    if len(total_diff)>=1:
+        if total_diff[-1]<0 and  roll_total >=90:
+            sign*= -1
+        if total_diff[-1]<0 and roll_total <=-100:
+            sign *= -1
+    
+    if pos == 0:
+        if sign == 1 and row[1]['ask_volume']>0:
+            pos = 1
+            pos_price = row[1]['ask_price']
+            
+            max_price = row[1]['ask_price']
+        elif sign == -1 and row[1]['bid_volume']>0:
+            pos = -1
+            pos_price = row[1]['bid_price']
+            
+            min_price = row[1]['bid_price']
+    elif pos == 1 and row[1]['bid_price']>0:
+        diff = row[1]['bid_price'] - pos_price
+        max_price = max(max_price, row[1]['bid_price'])
+        drop = max_price - row[1]['bid_price']
+        if diff>=long_benifit and drop >= max_drop:
+            long_diff.append(diff)
+            pos = 0
+            total_diff.append(diff)
+            direction.append(1)
+            changed.append(diff)
+            cumsum.append(sum(changed))
+        elif diff<= long_loss:
+            long_diff.append(diff)
+            pos = 0  
+            total_diff.append(diff)
+            direction.append(1)
+            changed.append(diff)
+            cumsum.append(sum(changed))
+    elif pos == -1 and row[1]['ask_price']>0:
+        diff = pos_price - row[1]['ask_price']
+        min_price = min(min_price, row[1]['ask_price'])
+        drop = row[1]['ask_price'] - min_price
+        if diff>=short_benifit and drop>= min_drop:
+            short_diff.append(diff)
+            pos = 0
+            total_diff.append(diff)
+            direction.append(-1)
+            changed.append(-1*diff)
+            cumsum.append(sum(changed))
+        elif diff<= short_loss:
+            short_diff.append(diff)
+            pos = 0
+            total_diff.append(diff)
+            direction.append(-1)
+            changed.append(-1*diff)
+            cumsum.append(sum(changed))
+print(sum(long_diff),len(long_diff))
+print(sum(short_diff),len(short_diff))
