@@ -1,7 +1,6 @@
 h1 = data[(data['last_price']<=data['bid_price'])&(data['diff0']>=-0.5)&(data['bid_volume']>5*data['ask_volume'])].index
 l1 = data[(data['last_price']>=data['ask_price'])&(data['diff0']<= 0.5)&(data['ask_volume']>4.4*data['bid_volume'])].index
 
-
 pos = 0
 
 long_benifit = 5
@@ -24,8 +23,8 @@ drop = 0
 
 for row in tqdm(test_data.iterrows()):
     sign = row[1]['sign']
-    roll_sum = sum(changed[-3:])
-    roll_sum_1 = sum(changed[-4:-1])
+    roll_sum = sum(changed[-4:])
+    roll_sum_1 = sum(changed[-5:-1])
     roll_diff = roll_sum - roll_sum_1
     roll_total = roll_sum+roll_diff
     
@@ -38,6 +37,9 @@ for row in tqdm(test_data.iterrows()):
         if total_diff[-1]<0 and roll_diff< -15:
             if direction[-1]==sign == 1:
                 sign *= -1
+ 
+        elif total_diff[-1]<0 and roll_total >= 35:
+            sign*= -1
 
     if pos == 0:
         if sign == 1 and row[1]['ask_volume']>0:
