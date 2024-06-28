@@ -1,14 +1,14 @@
-h1 = data[(data['last_price']<=data['bid_price'])&(data['diff0']<=2)&(data['bid_volume']>7.5*data['ask_volume'])].index
-l1 =  data[(data['last_price']>=data['ask_price'])&(data['diff0']>=-2)&(data['ask_volume']>7.5*data['bid_volume'])].index
+h1 = data[(data['last_price']<=data['bid_price'])&(data['diff0']<=3)&(data['bid_volume']>7.5*data['ask_volume'])].index
+l1 =  data[(data['last_price']>=data['ask_price'])&(data['diff0']>=-3)&(data['ask_volume']>7.5*data['bid_volume'])].index
 
 pos = 0
 
-long_benifit = 27
-long_loss = -29
-short_benifit = 27
-short_loss = -29
-max_drop = 8
-min_drop = 8
+long_benifit = 25
+long_loss = -35
+short_benifit = 25
+short_loss = -35
+max_drop = 6
+min_drop = 6
 
 long_diff = []
 short_diff = []
@@ -27,18 +27,19 @@ for row in tqdm(test_data.iterrows()):
     roll_sum_1 = sum(changed[-6:-1])
     roll_diff = roll_sum - roll_sum_1
     roll_total = roll_sum+roll_diff
-    
-   
-    if len(total_diff)>=1:
-        if total_diff[-1]<0 and roll_total <= -100 and roll_total >=-180:
-            if sign == 1:
-                sign *= -1
-        elif  roll_total>=95:
-            if  sign == -1 and roll_total <= 180 :
-                sign *= -1
-            elif sign == 1 and roll_total >180:
-                sign*=-1
 
+    # if roll_total>=120 and roll_total <= 200:
+    #     if sign == -1:
+    #         sign *= -1
+    # elif roll_total <= -120 and roll_total >=- 200:
+    #     if sign == 1:
+    #         sign *= -1
+    if roll_total <= -170 and sign == -1:
+        sign *= -1
+    elif roll_total >= 80 and roll_total <= 120:
+        if sign == -1:
+            sign *= -1
+  
     if pos == 0:
         if sign == 1 and row[1]['ask_volume']>0:
             pos = 1
